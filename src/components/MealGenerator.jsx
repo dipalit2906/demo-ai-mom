@@ -26,13 +26,21 @@ export default function MealGenerator() {
   }, [])
 
   const fetchPreferences = async () => {
+    const savedId = localStorage.getItem('aime-preference-id')
+    
+    // If they haven't saved preferences in this browser, don't fetch anything
+    if (!savedId) {
+      setPreferences(null)
+      setLoadingPrefs(false)
+      return
+    }
+
     setLoadingPrefs(true)
     try {
       const { data, error } = await supabase
         .from('family_preferences')
         .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
+        .eq('id', savedId)
         .single()
 
       if (error && error.code !== 'PGRST116') throw error // PGRST116 = no rows

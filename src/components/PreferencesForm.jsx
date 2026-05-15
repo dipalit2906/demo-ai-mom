@@ -73,7 +73,7 @@ export default function PreferencesForm({ onSaved }) {
 
     setSaving(true)
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('family_preferences')
         .insert([{
           mom_name: form.mom_name.trim(),
@@ -83,8 +83,14 @@ export default function PreferencesForm({ onSaved }) {
           cooking_time: form.cooking_time,
           budget_preference: form.budget_preference,
         }])
+        .select() // Return the inserted row so we get its ID
 
       if (error) throw error
+
+      // Save this specific preference ID to the browser so the user only sees their own data
+      if (data && data[0]) {
+        localStorage.setItem('aime-preference-id', data[0].id)
+      }
 
       toast.success(`Welcome, ${form.mom_name}! Your preferences are saved 🎉`)
       onSaved?.(form) // notify parent to refresh preferences
