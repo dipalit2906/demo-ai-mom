@@ -95,12 +95,22 @@ export default function MealHistory() {
   }, [])
 
   const fetchHistory = async () => {
+    const historyIds = JSON.parse(localStorage.getItem('aime-history-ids') || '[]')
+    
+    // If they have never generated a meal plan in this browser, show empty state
+    if (historyIds.length === 0) {
+      setHistory([])
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     setError(null)
     try {
       const { data, error } = await supabase
         .from('meal_history')
         .select('*')
+        .in('id', historyIds)
         .order('created_at', { ascending: false })
         .limit(20)
 

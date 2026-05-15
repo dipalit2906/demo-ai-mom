@@ -77,16 +77,22 @@ export default function MealGenerator() {
       setMealPlan(result)
 
       // Save to Supabase meal_history
-      const { error: saveError } = await supabase
+      const { data: saveResult, error: saveError } = await supabase
         .from('meal_history')
         .insert([{
           generated_meal_plan: result,
           prompt_used: prompt,
         }])
+        .select() // Return the inserted row to get its ID
 
       if (saveError) {
         console.warn('Could not save to history:', saveError)
         // Non-fatal — don't block the user
+      } else if (saveResult && saveResult[0]) {
+        // Save history ID to local storage so user only sees their own history
+        const existingHistory = JSON.parse(localStorage.getItem('aime-history-ids') || '[]')
+        existingHistory.push(saveResult[0].id)
+        localStorage.setItem('aime-history-ids', JSON.stringify(existingHistory))
       }
 
       toast.success('Meal plan generated! 🎉')
