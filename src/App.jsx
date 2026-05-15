@@ -14,8 +14,8 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('aime-dark-mode')
     if (saved !== null) return saved === 'true'
-    // Default: respect OS preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    // Default: always dark mode
+    return true
   })
 
   // Apply/remove 'dark' class on <html> when darkMode changes
