@@ -128,3 +128,11 @@ function getMockMealPlan() {
 
 *✨ Add your Gemini API key for personalized AI-generated plans!*`
 }
+
+/**
+ * Returns the demo meal plan instantly — no API call.
+ * Used by the "👀 See Demo Result" button in the UI.
+ */
+export function getDemoMealPlan() {
+  return getMockMealPlan()
+}

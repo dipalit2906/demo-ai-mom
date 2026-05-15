@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../services/supabaseClient'
-import { buildPrompt, generateMealPlan } from '../services/openaiService'
+import { buildPrompt, generateMealPlan, getDemoMealPlan } from '../services/openaiService'
 import AimeSummary from './AimeSummary'
 import QuickChips from './QuickChips'
 import MealCard from './MealCard'
@@ -106,6 +106,39 @@ export default function MealGenerator() {
         </p>
       </div>
 
+      {/* Free API notice banner */}
+      <div className="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-2xl px-4 py-3">
+        <span className="text-lg flex-shrink-0 mt-0.5">⚡</span>
+        <div>
+          <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-0.5">⚠️ Demo Notice — Free AI API</p>
+          <p className="text-xs text-amber-600 dark:text-amber-500 leading-relaxed">
+            This demo uses Google Gemini's <strong>free tier</strong>, which may occasionally fail due to daily request limits.
+            If it doesn't work, please wait 30–60 seconds and try again. <br />
+            <strong>Once connected to a paid API key, this will work seamlessly every time. ✅</strong>
+          </p>
+        </div>
+      </div>
+
+      {/* Demo Result button */}
+      <div className="relative group flex justify-center">
+        <button
+          id="see-demo-result"
+          onClick={() => {
+            setMealPlan(getDemoMealPlan())
+            setPromptPreview('Create a healthy 5-day vegetarian family meal plan — demo result')
+          }}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-dashed border-rose-300 dark:border-rose-700 text-rose-500 dark:text-rose-400 text-sm font-medium hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:border-rose-400 transition-all duration-200"
+        >
+          <span className="text-base">👀</span>
+          See Demo Result
+        </button>
+        {/* Tooltip */}
+        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-64 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded-xl px-3 py-2 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg z-10">
+          Want to see the full design &amp; output? Click here to load a sample meal plan instantly — no API needed! ✨
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800 dark:border-t-gray-700" />
+        </div>
+      </div>
+
       {/* Aime Summary card */}
       {loadingPrefs ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-card">
@@ -165,12 +198,12 @@ export default function MealGenerator() {
 
       {/* Error state */}
       {error && !generating && (
-        <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-5 border border-red-200 dark:border-red-900/30 animate-fadeIn">
+        <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-5 border border-red-200 dark:border-red-900/30 animate-fadeIn space-y-3">
           <div className="flex items-start gap-3">
             <span className="text-xl">😔</span>
             <div>
               <p className="text-sm font-semibold text-red-500 mb-1">Oops, something went wrong!</p>
-              <p className="text-xs text-red-400">{error}</p>
+              <p className="text-xs text-red-400 leading-relaxed">{error}</p>
               <button
                 onClick={() => handleGenerate(false)}
                 className="mt-3 text-xs font-medium text-red-500 underline"
@@ -178,6 +211,16 @@ export default function MealGenerator() {
                 Try again
               </button>
             </div>
+          </div>
+          {/* Free tier explanation */}
+          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl px-4 py-3 border border-amber-200 dark:border-amber-800/40">
+            <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1">💡 Why did this happen?</p>
+            <p className="text-xs text-amber-600 dark:text-amber-500 leading-relaxed">
+              This app uses Google Gemini's <strong>free tier</strong>, which has a limited number of requests per day.
+              The free API may occasionally be unavailable or throttled. Simply wait 30–60 seconds and try again.
+              <br /><br />
+              <span className="font-medium">For a live production app</span>, connecting a paid Gemini API key gives you full, uninterrupted access with higher limits.
+            </p>
           </div>
         </div>
       )}
